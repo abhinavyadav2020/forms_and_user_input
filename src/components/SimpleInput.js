@@ -52,6 +52,7 @@ const SimpleInput = (props) => {
 
     setEnteredEmail('');
     setEnteredEmailTouched(false);
+    
   };
 
   const nameInputClasses = nameInputIsInvalid
