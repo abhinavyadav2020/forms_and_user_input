@@ -1,127 +1,106 @@
-import { useState } from "react";
+import useInput from "../hooks/use-input";
+
+const isNotEmpty = (value) => value.trim !== "";
+const isEmail = (value) => value.includes("@");
 
 const BasicForm = (props) => {
-  const [enteredName, setEnteredName] = useState("");
-  // const [isEnteredNameValid, setIsEnteredNameValid] = useState(false);
-  const [enteredNameTouched, setEnteredNameTouched] = useState(false);
-  const isEnteredNameValid = enteredName.trim() !== "";
-  const firstNameInputIsValid = !isEnteredNameValid && enteredNameTouched;
+  const {
+    value: enteredName,
+    isValid: enteredNameIsValid,
+    hasError: firstNameHasError,
+    valueChangeHandler: nameChangedHandler,
+    inputBlurHandler: nameBlurHandler,
+    reset: resetNameInput,
+  } = useInput(isNotEmpty);
 
+  const {
+    value: enteredLastName,
+    isValid: enteredLastNameIsValid,
+    hasError: lastNameHasError,
+    valueChangeHandler: lastNameChangedHandler,
+    inputBlurHandler: lastNameBlurHandler,
+    reset: resetLastNameInput,
+  } = useInput(isNotEmpty);
 
-  const [enteredLastName, setEnteredLastName] = useState("");
-  const [enteredLastNameTouched, setEnteredLastNameTouched] = useState(false);
-  const isEnteredLastNameValid = enteredName.trim() !== "";
-  const lastNameInputIsValid = !isEnteredLastNameValid && enteredLastNameTouched;
+  const {
+    value: enteredEmail,
+    isValid: enteredEmailIsValid,
+    hasError: emailHasError,
+    valueChangeHandler: emailChangedHandler,
+    inputBlurHandler: emailBlurHandler,
+    reset: resetEmailInput,
+  } = useInput(isEmail);
 
+  let formIsValid = false;
 
-  const [enteredEmail, setEnteredEmail] = useState("");
-  const [enteredEmailTouched, setEnteredEmailTouched] = useState(false);
-  const isEnteredEmailValid = enteredName.trim() !== "";
-  const emailInputIsValid = !isEnteredEmailValid && enteredEmailTouched;
-
-
-  let isFormValid = false;
-  if (firstNameInputIsValid || lastNameInputIsValid || emailInputIsValid) {
-    isFormValid = true;
+  if (enteredNameIsValid && enteredLastNameIsValid && enteredEmailIsValid) {
+    formIsValid = true;
   }
 
-  const formSubmissionHandler = (event) => {
+  const submitHandler = (event) => {
     event.preventDefault();
 
-    setEnteredNameTouched(true);
-    setEnteredLastNameTouched(true);
-    setEnteredEmailTouched(true);
-
-    if (!isEnteredNameValid || !isEnteredLastNameValid || !isEnteredEmailValid) {
+    if (!formIsValid) {
       return;
     }
 
-    // setIsEnteredNameValid(true);
+    console.log("Submitted!");
+    console.log(firstNameValue, lastNameValue, emailValue);
 
-    console.log(enteredName);
-    console.log(enteredLastName);
-    console.log(enteredEmail);
-
-    setEnteredName('');
-    setEnteredNameTouched(false);
+    resetNameInput();
+    resetLastNameInput();
+    resetEmailInput();
   };
 
-  const firstNameInputChangeHandler = (event) => {
-    setEnteredName(event.target.value);
-  };
-  const nameInputBlurHandler = () => {
-    setEnteredNameTouched(true);
-  };
-
-
-  const lastNameInputChangeHandler = (event) => {
-    setEnteredLastName(event.target.value);
-  };
-  const lastNameBlurChangeHandler = () => {
-    setEnteredLastNameTouched(true);
-  };
-
-  
-  const emailInputChangeHandler = (event) => {
-    setEnteredEmail(event.target.value);
-  };
-  const emailBlurChangeHandler = () => {
-    setEnteredEmailTouched(true);
-  };
-
-  const firstNameInputClasses = firstNameInputIsValid
+  const firstNameClasses = firstNameHasError
     ? "form-control invalid"
     : "form-control";
-
-  const lastNameInputClasses = lastNameInputIsValid
+  const lastNameClasses = lastNameHasError
     ? "form-control invalid"
     : "form-control";
-
-  const emailInputClasses = emailInputIsValid
-    ? "form-control invalid"
-    : "form-control";
+  const emailClasses = emailHasError ? "form-control invalid" : "form-control";
 
   return (
-    <form onSubmit={formSubmissionHandler}>
+    <form onSubmit={submitHandler}>
       <div className="control-group">
-        <div className={firstNameInputClasses}>
+        <div className={firstNameClasses}>
           <label htmlFor="name">First Name</label>
           <input
             type="text"
             id="name"
-            onChange={firstNameInputChangeHandler}
-            onBlur={nameInputBlurHandler}
             value={enteredName}
+            onChange={nameChangedHandler}
+            onBlur={nameBlurHandler}
           />
-          {firstNameInputIsValid && (
-            <p className="error-text">First name must not be empty.</p>
+          {firstNameHasError && (
+            <p className="error-text">Please enter a first name.</p>
           )}
         </div>
-        <div className={lastNameInputClasses}>
+        <div className={lastNameClasses}>
           <label htmlFor="name">Last Name</label>
           <input
             type="text"
-            id="lastname"
-            onChange={lastNameInputChangeHandler}
-            onBlur={lastNameBlurChangeHandler}
+            id="name"
             value={enteredLastName}
+            onChange={lastNameBlurHandler}
+            onBlur={lastNameBlurHandler}
           />
-          {lastNameInputIsValid && (
-            <p className="error-text">Last name must not be empty.</p>
+          {lastNameHasError && (
+            <p className="error-text">Please enter a last name.</p>
           )}
         </div>
       </div>
-      <div className={emailInputClasses}>
+      <div className={emailClasses}>
         <label htmlFor="name">E-Mail Address</label>
         <input
           type="text"
-          id="email"
-          onChange={emailInputChangeHandler}
-          onBlur={emailBlurChangeHandler}
+          id="name"
           value={enteredEmail}
+          onChange={emailChangedHandler}
+          onBlur={emailBlurHandler}
         />
-        {emailInputIsValid && (
-          <p className="error-text">Email must not be empty.</p>
+        {emailHasError && (
+          <p className="error-text">Please enter a valid email address.</p>
         )}
       </div>
       <div className="form-actions">
